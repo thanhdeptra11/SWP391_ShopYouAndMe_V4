@@ -45,10 +45,6 @@
         <servlet-class>Controller.Home.Cart</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>Checkout</servlet-name>
-        <servlet-class>Controller.Home.Checkout</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>AddCart</servlet-name>
         <servlet-class>Controller.Home.AddCart</servlet-class>
     </servlet>
@@ -91,10 +87,6 @@
     <servlet-mapping>
         <servlet-name>Cart</servlet-name>
         <url-pattern>/cart</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>Checkout</servlet-name>
-        <url-pattern>/checkout</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AddCart</servlet-name>
