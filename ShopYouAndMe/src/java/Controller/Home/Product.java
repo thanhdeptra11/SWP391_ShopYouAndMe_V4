@@ -197,224 +197,60 @@ public class Product extends HttpServlet {
         }
 
         //SearchByPrice
+               //SearchByPrice
         if (action.equalsIgnoreCase("searchByPrice")) {
             productDAO dao = new productDAO();
             List<Category> category = dao.getCategory();
             String[] choose = request.getParameterValues("price");
+            List<model.Product> list0 = dao.getProduct();
             List<model.Product> list1 = dao.getProductByPrice(0, 50000);
             List<model.Product> list2 = dao.getProductByPrice(50000, 200000);
             List<model.Product> list3 = dao.getProductByPrice(200000, 500000);
             List<model.Product> list4 = dao.getProductByPrice(500000, 1000000);
             List<model.Product> list5 = dao.getProductByPrice(1000000);
-            List<model.Product> list0 = dao.getProduct();
             List<model.Product> listc = new ArrayList<>();
-            if (choose == null || choose.equals("") || choose.length == 0 || choose.length == 5) {
-                request.setAttribute("ProductData", list0);
-                request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-            }
-            if (choose.length == 2) {
-                if (choose[0].equals("0") && choose[1].equals("1")) {
-                    listc.addAll(list1);
-                    listc.addAll(list2);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("0") && choose[1].equals("2")) {
-                    listc.addAll(list1);
-                    listc.addAll(list3);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("0") && choose[1].equals("3")) {
-                    listc.addAll(list1);
-                    listc.addAll(list4);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("0") && choose[1].equals("4")) {
-                    listc.addAll(list1);
-                    listc.addAll(list5);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("1") && choose[1].equals("2")) {
-                    listc.addAll(list2);
-                    listc.addAll(list3);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("1") && choose[1].equals("3")) {
-                    listc.addAll(list2);
-                    listc.addAll(list4);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("1") && choose[1].equals("4")) {
-                    listc.addAll(list2);
-                    listc.addAll(list5);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("2") && choose[1].equals("4")) {
-                    listc.addAll(list3);
-                    listc.addAll(list5);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("3") && choose[1].equals("4")) {
-                    listc.addAll(list4);
-                    listc.addAll(list5);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("2") && choose[1].equals("3")) {
-                    listc.addAll(list3);
-                    listc.addAll(list4);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
 
+            if (choose == null || choose.length == 0 || choose.length == 5) {
+               listc.addAll(list0);
             }
-            if (choose.length == 4) {
-                if (!choose[0].equals("0") && !choose[1].equals("0") && !choose[2].equals("0") && !choose[3].equals("0")) {
-                    listc.addAll(list2);
-                    listc.addAll(list3);
-                    listc.addAll(list4);
-                    listc.addAll(list5);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
+            else {
+                for (String price : choose) {
+                    switch (price) {
+                        case "0":
+                            listc.addAll(list1);
+                            break;
+                        case "1":
+                            listc.addAll(list2);
+                            break;
+                        case "2":
+                            listc.addAll(list3);
+                            break;
+                        case "3":
+                            listc.addAll(list4);
+                            break;
+                        case "4":
+                            listc.addAll(list5);
+                    }
                 }
-                if (!choose[0].equals("1") && !choose[1].equals("1") && !choose[2].equals("1") && !choose[3].equals("1")) {
-                    listc.addAll(list1);
-                    listc.addAll(list3);
-                    listc.addAll(list4);
-                    listc.addAll(list5);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (!choose[0].equals("2") && !choose[1].equals("2") && !choose[2].equals("2") && !choose[3].equals("2")) {
-                                       listc.addAll(list1);
-                    listc.addAll(list2);
-                    listc.addAll(list4);
-                    listc.addAll(list5);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (!choose[0].equals("3") && !choose[1].equals("3") && !choose[2].equals("3") && !choose[3].equals("3")) {
-                     listc.addAll(list1);
-                    listc.addAll(list2);
-                    listc.addAll(list3);
-                    listc.addAll(list5);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (!choose[0].equals("4") && !choose[1].equals("4") && !choose[2].equals("4") && !choose[3].equals("4")) {
-                    listc.addAll(list1);
-                    listc.addAll(list2);
-                    listc.addAll(list3);
-                    listc.addAll(list4);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
+        }
+            int page, numperpage = 9;
+            int size = listc.size();
+            int num = (size % 9 == 0 ? (size / 9) : ((size / 9)) + 1);// Number of pages
+            String xpage = request.getParameter("page");
+            if (xpage == null) {
+                page = 1; // Default page
+            } else {
+                page = Integer.parseInt(xpage);
             }
-            if (choose.length == 3) {
-                if (choose[0].equals("0") && choose[1].equals("1") && choose[2].equals("2")) {
-                    listc.addAll(list1);
-                    listc.addAll(list2);
-                    listc.addAll(list3);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("0") && choose[1].equals("1") && choose[2].equals("3")) {
-                    listc.addAll(list1);
-                    listc.addAll(list2);
-                    listc.addAll(list4);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("0") && choose[1].equals("1") && choose[2].equals("4")) {
-                    listc.addAll(list1);
-                    listc.addAll(list2);
-                    listc.addAll(list5);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("0") && choose[1].equals("2") && choose[2].equals("3")) {
-                    listc.addAll(list1);
-                    listc.addAll(list3);
-                    listc.addAll(list4);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("0") && choose[1].equals("2") && choose[2].equals("4")) {
-                    listc.addAll(list1);
-                    listc.addAll(list3);
-                    listc.addAll(list5);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("0") && choose[1].equals("3") && choose[2].equals("4")) {
-                    listc.addAll(list1);
-                    listc.addAll(list4);
-                    listc.addAll(list5);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("1") && choose[1].equals("2") && choose[2].equals("3")) {
-                    listc.addAll(list2);
-                    listc.addAll(list3);
-                    listc.addAll(list4);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("1") && choose[1].equals("2") && choose[2].equals("4")) {
-                    listc.addAll(list2);
-                    listc.addAll(list3);
-                    listc.addAll(list5);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("1") && choose[1].equals("3") && choose[2].equals("4")) {
-                    listc.addAll(list2);
-                    listc.addAll(list4);
-                    listc.addAll(list5);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-                if (choose[0].equals("2") && choose[1].equals("3") && choose[2].equals("4")) {
-                    listc.addAll(list3);
-                    listc.addAll(list4);
-                    listc.addAll(list5);
-                    request.setAttribute("ProductData", listc);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-            }
-                if (choose.length == 1) {
-                    if (choose[0].equals("0")) {
-                        request.setAttribute("ProductData", list1);
-                        request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                    }
-                    if (choose[0].equals("1")) {
-                        request.setAttribute("ProductData", list2);
-                        request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                    }
-                    if (choose[0].equals("2")) {
-                        request.setAttribute("ProductData", list3);
-                        request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                    }
-                    if (choose[0].equals("3")) {
-                        request.setAttribute("ProductData", list4);
-                        request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                    }
-                    if (choose[0].equals("4")) {
-                        request.setAttribute("ProductData", list5);
-                        request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                    }
-                } else {
-                    request.setAttribute("ProductData", list0);
-                    request.getRequestDispatcher("shop_category.jsp").forward(request, response);
-                }
-            
+            int start = (page - 1) * numperpage;
+            int end = Math.min(page * numperpage, size);
+            List<model.Product> product = listc.subList(start, end); // Sublist for current page
+
+            request.setAttribute("page", page);
+            request.setAttribute("num", num);
+            request.setAttribute("CategoryData", category);
+            request.setAttribute("ProductData", product);
+            request.getRequestDispatcher("shop_category.jsp").forward(request, response); 
         }
             //Search By Color
             if (action.equalsIgnoreCase("SearchByColor")) {
