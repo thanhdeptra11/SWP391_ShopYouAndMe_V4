@@ -31,3 +31,13 @@ public class DBContext {
     private final String userID = "sa";
     private final String password = "1";
 }
+class Using{
+    public static void main(String[] args) {
+        try {
+            new DBContext().getConnection();
+            System.out.println("Ket noi thanh cong");
+        } catch (Exception e) {
+            System.out.println("Ket noi that bai" + e.getMessage());
+        }
+    }
+}
