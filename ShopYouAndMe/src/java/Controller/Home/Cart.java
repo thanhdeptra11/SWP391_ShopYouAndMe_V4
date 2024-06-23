@@ -32,7 +32,7 @@ public class Cart extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(true);
+       HttpSession session = request.getSession(true);
         String action = request.getParameter("action");
         
         if (action == null) {           
@@ -80,6 +80,8 @@ public class Cart extends HttpServlet {
             session.setAttribute("total", cart.getTotalMoney());
             session.setAttribute("size", list.size());
             response.sendRedirect("cart.jsp");
+            
+            
         }
 
     }

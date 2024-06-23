@@ -28,7 +28,7 @@ public class userDAO extends DBContext{
             ps.setString(2, user_pass);
             rs = ps.executeQuery();
             while (rs.next()) {
-                User user = new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),rs.getString(6),rs.getString(7),rs.getString(8));
+                User user = new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),rs.getString(6),rs.getString(7),rs.getString(8),rs.getBoolean(9));
                 return user;
             }
         } catch (Exception e) {
@@ -71,7 +71,7 @@ public class userDAO extends DBContext{
                 ps.setString(1, user_email);
                 rs = ps.executeQuery();
                 while(rs.next()){
-                   User a = new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),rs.getString(6), rs.getString(7), rs.getString(8));
+                   User a = new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),rs.getString(6), rs.getString(7), rs.getString(8),rs.getBoolean(9));
                    return a;
                 }
             } catch (Exception e) {
@@ -105,7 +105,7 @@ public class userDAO extends DBContext{
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
-                list.add(new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),rs.getString(6), rs.getString(7), rs.getString(8)));
+                list.add(new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),rs.getString(6), rs.getString(7), rs.getString(8),rs.getBoolean(9)));
             }
 
         } catch (Exception e) {
@@ -139,6 +139,28 @@ public class userDAO extends DBContext{
         }
         
     }
-    
+     public void banUser(int user_id) {
+        String sql = "UPDATE users SET banned = 1 WHERE user_id = ?";
+        try {
+            conn = new DBContext().getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, user_id);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public void unbanUser(int user_id) {
+        String sql = "UPDATE users SET banned = 0 WHERE user_id = ?";
+        try {
+            conn = new DBContext().getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, user_id);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
 
 }
