@@ -80,6 +80,8 @@ public class Cart extends HttpServlet {
             session.setAttribute("total", cart.getTotalMoney());
             session.setAttribute("size", list.size());
             response.sendRedirect("cart.jsp");
+            
+            
         }
 
     }
