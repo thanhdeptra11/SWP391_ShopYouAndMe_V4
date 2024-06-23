@@ -25,9 +25,19 @@ public class DBContext {
         return DriverManager.getConnection(url, userID, password);
     }
     private final String serverName = "localhost";
-    private final String dbName = "MyShop";
+    private final String dbName = "ShopYME";
     private final String portNumber = "1433";
     private final String instance = "";//LEAVE THIS ONE EMPTY IF YOUR SQL IS A SINGLE INSTANCE
     private final String userID = "sa";
     private final String password = "1";
+}
+class Using{
+    public static void main(String[] args) {
+        try {
+            new DBContext().getConnection();
+            System.out.println("Ket noi thanh cong");
+        } catch (Exception e) {
+            System.out.println("Ket noi that bai" + e.getMessage());
+        }
+    }
 }
