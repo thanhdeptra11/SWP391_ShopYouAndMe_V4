@@ -136,6 +136,7 @@ public class Checkout extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(true);
+          HttpSession session = request.getSession(true);
         Object u = session.getAttribute("user");
         if (u != null) {
             request.getRequestDispatcher("checkout.jsp").forward(request, response);
