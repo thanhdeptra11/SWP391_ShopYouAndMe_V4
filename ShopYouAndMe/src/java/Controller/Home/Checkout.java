@@ -98,16 +98,16 @@ public class Checkout extends HttpServlet {
                         request.setAttribute("bill", bill);
                         request.getRequestDispatcher("vnpay_pay.jsp").forward(request, response);
                         }
-                        String queryUrl = query.toString();
-                        String vnp_SecureHash = VnPayCommon.Config.hmacSHA512(VnPayCommon.Config.secretKey, hashData.toString());
-                        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-                        String paymentUrl = VnPayCommon.Config.vnp_PayUrl + "?" + queryUrl;
-                        com.google.gson.JsonObject job = new JsonObject();
-                        job.addProperty("code", "00");
-                        job.addProperty("message", "success");
-                        job.addProperty("data", paymentUrl);
-                        Gson gson = new Gson();
-                        response.getWriter().write(gson.toJson(job));
+//                        String queryUrl = query.toString();
+//                        String vnp_SecureHash = VnPayCommon.Config.hmacSHA512(VnPayCommon.Config.secretKey, hashData.toString());
+//                        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
+//                        String paymentUrl = VnPayCommon.Config.vnp_PayUrl + "?" + queryUrl;
+//                        com.google.gson.JsonObject job = new JsonObject();
+//                        job.addProperty("code", "00");
+//                        job.addProperty("message", "success");
+//                        job.addProperty("data", paymentUrl);
+//                        Gson gson = new Gson();
+//                        response.getWriter().write(gson.toJson(job));
                     }
                 
             } 
