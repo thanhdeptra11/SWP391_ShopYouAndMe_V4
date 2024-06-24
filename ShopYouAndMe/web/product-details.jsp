@@ -110,6 +110,60 @@
         <!--product details end-->
         <!--product info end-->
 
+        <div class="form-container">
+            <form action="product" method="POST">
+                <input type="hidden" name="action" value="addRating">
+                <input type="hidden" name="product_id" value="${ProductData.product_id}">
+                <input type="hidden" name="user_id" value="${user.user_id}">
+                <h3>Đánh giá sản phẩm</h3>
+                <select name="rating" id="star-rating">
+                    <option value="1">1&#9733;</option>
+                    <option value="2">2&#9733;&#9733;</option>
+                    <option value="3">3&#9733;&#9733;&#9733;</option>
+                    <option value="4">4&#9733;&#9733;&#9733;&#9733;</option>
+                    <option value="5">5&#9733;&#9733;&#9733;&#9733;&#9733;</option>
+                </select>
+                <button type="submit">Gửi đánh giá</button>
+            </form>
+        </div>
+
+
+        <!-- Form for adding comment -->
+        <div class="form-container">
+            <form action="product" method="POST">
+                <input type="hidden" name="action" value="addComment">
+                <input type="hidden" name="product_id" value="${ProductData.product_id}">
+                <input type="hidden" name="user_id" value="${user.user_id}">
+                <h3>Bình luận sản phẩm</h3>
+                <textarea name="comment" rows="4" cols="50" placeholder="Nhập bình luận của bạn"></textarea>
+                <button type="submit">Gửi bình luận</button>
+            </form>
+        </div>
+
+
+
+        <div class="product_reviews">
+            <h3>Đánh giá và Bình luận</h3>
+            <h4>Đánh giá trung bình: 
+                <fmt:formatNumber value="${averageRating}" maxFractionDigits="1"/> <span class="star">&#9733;</span>
+            </h4>
+            <c:forEach items="${ratings}" var="rating">
+                <div class="rating">
+                    <p>${rating.rating}&#9733</p>
+                    <p>Bởi: ${user.user_name}</p>
+                    <p>Ngày: <fmt:formatDate value="${rating.createdAt}" pattern="dd/MM/yyyy"/></p>
+                </div>
+            </c:forEach>
+
+            <h5>Bình luận:</h5>
+            <c:forEach items="${comments}" var="c">
+                <div class="comment">
+                    <p>Bởi: ${user.user_name}</p>
+                    <p>${c.comment}</p>
+                </div>
+            </c:forEach>
+        </div>
+
         <!--product section area start-->
         <section class="product_section related_product">
             <div class="container">
