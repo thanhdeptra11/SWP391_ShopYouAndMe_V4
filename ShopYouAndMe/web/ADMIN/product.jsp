@@ -305,7 +305,7 @@
         <script>
 
             $(document).ready(jQuery(function () {
-                jQuery(document).on('click', '.trash', function () {
+                jQuery(".trash").click(function () {
                     swal({
                         title: "Cảnh báo",
                         text: "Bạn có chắc chắn là muốn xóa sản phẩm này?",
@@ -315,7 +315,6 @@
                                 if (willDelete) {
                                     window.location = "productmanager?action=deleteproduct&product_id=" + $(this).attr("value");
                                     swal("Đã xóa thành công.!", {
-                                        icon: "success",
                                     });
                                 }
                             });
