@@ -1,25 +1,26 @@
-package model;
-import java.sql.Timestamp;
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-public class Comment {
+package model;
+
+import java.sql.Timestamp;
+
+public class Rating {
     public int id;
     public String productId;
     public int userId;
-    public String comment;
+    public int rating;
     public Timestamp createdAt;
 
-    public Comment() {
+    public Rating() {
     }
 
-    public Comment(int id, String productId, int userId,String comment, Timestamp createdAt) {
+    public Rating(int id, String productId, int userId,int rating, Timestamp createdAt) {
         this.id = id;
         this.productId = productId;
         this.userId = userId;
-        this.comment = comment;
+        this.rating = rating;
         this.createdAt = createdAt;
     }
 
@@ -48,12 +49,13 @@ public class Comment {
     }
 
 
-    public String getComment() {
-        return comment;
+
+    public int getRating() {
+        return rating;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 
     public Timestamp getCreatedAt() {
