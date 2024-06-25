@@ -2,6 +2,9 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page import="model.Product" %>
+<%@page import="model.Product_Active" %>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -104,6 +107,7 @@
                                             <th>Thông tin</th>
                                             <th>Số lượng</th>
                                             <th>Ảnh</th>
+                                            <th>Trạng thái hoạt động</th>
                                             <th>Chức năng</th>
                                         </tr>
                                     </thead>
@@ -132,7 +136,13 @@
                                                 <td>${p.product_describe}</td>
                                                 <td>${p.quantity}</td>
                                                 <td><img src="${p.img}" alt="" width="100px;"></td>
-
+                                                <td>
+                                                    <c:forEach items="${ActiveData}" var="s">
+                                                        <c:if test="${p.product_id==s.product_id}">
+                                                            ${s.acitve}   
+                                                        </c:if>
+                                                    </c:forEach>
+                                                </td>
                                                 <td>
                                                     <button class="btn btn-primary btn-sm trash" type="button" title="Xóa" value="${p.product_id}"><i
                                                             class="fas fa-trash-alt"></i>
@@ -199,12 +209,18 @@
                                                                     <script>
                                                                         CKEDITOR.replace('product_describe');
                                                                     </script>
-
+                                                                </div>
+                                                                <div class="form-group col-md-6">
+                                                                    <label class="control-label">Quản lý trạng thái hoạt động</label>
+                                                                    <select name="permission" class="form-control" id="exampleSelect1">
+                                                                        <option value="True">Bật</option>
+                                                                        <option value="False">Tắt</option>
+                                                                    </select>
                                                                 </div>
 
                                                                 <div class="form-group col-md-6">
                                                                     <label class="control-label">Số lượng</label>
-                                                                    <input class="form-control" type="text" name="product_quantity" value="${p.quantity}">
+                                                                    <input class="form-control" type="text" min="1" name="product_quantity" value="${p.quantity}">
                                                                 </div>
                                                                 <!--anh san pham-->
                                                                 <div class="form-group col-md-12">
@@ -305,7 +321,7 @@
         <script>
 
             $(document).ready(jQuery(function () {
-                jQuery(".trash").click(function () {
+                jQuery(document).on('click', '.trash', function () {
                     swal({
                         title: "Cảnh báo",
                         text: "Bạn có chắc chắn là muốn xóa sản phẩm này?",
@@ -315,6 +331,7 @@
                                 if (willDelete) {
                                     window.location = "productmanager?action=deleteproduct&product_id=" + $(this).attr("value");
                                     swal("Đã xóa thành công.!", {
+                                        icon: "success",
                                     });
                                 }
                             });
