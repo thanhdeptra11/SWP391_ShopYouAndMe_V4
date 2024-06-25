@@ -92,11 +92,12 @@ public class Checkout extends HttpServlet {
                         request.getRequestDispatcher("qrcode.jsp").forward(request, response);
                     }
                     if (payment_method.equals("vnpay")) {
-                            odel.Bill bill = dao.getBill();
+                            model.Bill bill = dao.getBill();
                         int total = Math.round(bill.getTotal());
                         request.setAttribute("total", total);
                         request.setAttribute("bill", bill);
                         request.getRequestDispatcher("vnpay_pay.jsp").forward(request, response);
+                        
                         }
 //                        String queryUrl = query.toString();
 //                        String vnp_SecureHash = VnPayCommon.Config.hmacSHA512(VnPayCommon.Config.secretKey, hashData.toString());

@@ -188,18 +188,18 @@
                         <h3 class="tile-title">Tạo mới sản phẩm</h3>
                         <div class="tile-body">
                             <div class="row element-button">
-                                <div class="col-sm-2">
-                                    <a class="btn btn-add btn-sm" data-toggle="modal" data-target="#adddanhmuc"><i
-                                            class="fas fa-folder-plus"></i> Thêm danh mục</a>
-                                </div>
-                                <div class="col-sm-2">
-                                    <a class="btn btn-add btn-sm" data-toggle="modal" data-target="#adddanhmuc"><i
-                                            class="fas fa-folder-plus"></i> Sửa danh mục</a>
-                                </div>
-                                <div class="col-sm-2">
-                                    <a class="btn btn-add btn-sm" data-toggle="modal" data-target="#adddanhmuc"><i
-                                            class="fas fa-folder-plus"></i> Xóa danh mục</a>
-                                </div>
+                                <!--                                <div class="col-sm-2">
+                                                                    <a class="btn btn-add btn-sm" data-toggle="modal" data-target="#adddanhmuc"><i
+                                                                            class="fas fa-folder-plus"></i> Thêm danh mục</a>
+                                                                </div>
+                                                                <div class="col-sm-2">
+                                                                    <a class="btn btn-add btn-sm" data-toggle="modal" data-target="#adddanhmuc"><i
+                                                                            class="fas fa-folder-plus"></i> Sửa danh mục</a>
+                                                                </div>
+                                                                <div class="col-sm-2">
+                                                                    <a class="btn btn-add btn-sm" data-toggle="modal" data-target="#adddanhmuc"><i
+                                                                            class="fas fa-folder-plus"></i> Xóa danh mục</a>
+                                                                </div>-->
                             </div>
 
                             <form class="row" action="productmanager" method="POST" >
@@ -237,6 +237,13 @@
                                 <div class="form-group  col-md-3">
                                     <label class="control-label">Số lượng</label>
                                     <input class="form-control" name="quantity" type="number" min="1" oninput="validateQuantity(this)">
+                                </div>
+                                <div class="form-group  col-md-3">
+                                    <label class="control-label">Quản lý trạng thái hoạt động</label>
+                                    <select name="permission" class="form-control" id="exampleSelect1">
+                                        <option value="True">Bật</option>
+                                        <option value="False">Tắt</option>
+                                    </select>
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="control-label">Ảnh sản phẩm</label>

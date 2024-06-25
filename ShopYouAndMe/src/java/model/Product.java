@@ -20,6 +20,7 @@ public class Product {
     String img;
     List<Size> size = new ArrayList<>();
     List<Color> color = new ArrayList<>();
+    Product_Active active;
 
     public Product() {
     }
@@ -120,6 +121,16 @@ public class Product {
     public void setColor(List<Color> color) {
         this.color = color;
     }
+
+    public Product_Active getActive() {
+        return active;
+    }
+
+    public void setActive(Product_Active active) {
+        this.active = active;
+    }
+
+
 
     @Override
     public String toString() {

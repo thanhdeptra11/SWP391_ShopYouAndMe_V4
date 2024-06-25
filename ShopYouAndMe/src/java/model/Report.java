@@ -1,14 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
-/**
- *
- * @author Phung An
- */
 public class Report {
+
     private int id_report;
     private int user_id;
     private String content_report;
@@ -65,5 +58,5 @@ public class Report {
     public void setUser_email(String user_email) {
         this.user_email = user_email;
     }
-    
+
 }
