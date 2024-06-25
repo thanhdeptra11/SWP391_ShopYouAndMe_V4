@@ -47,73 +47,90 @@ public class Checkout extends HttpServlet {
     response.setCharacterEncoding("UTF-8");
     response.setContentType("text/html; charset=UTF-8");
 
-    try {
-        HttpSession session = request.getSession(true);
-        Cart cart = (Cart) session.getAttribute("cart");
-        if (cart == null) {
-            cart = new Cart();
-        }
+     try {
 
-        User acc = (User) session.getAttribute("user");
-        if (acc == null) {
-            response.sendRedirect("user?action=login");
-            return;
-        }
-
-        String paymentMethod = request.getParameter("payment_method");
-        String address = request.getParameter("address");
-        String phone = request.getParameter("phone");
-
-        if (address == null || phone == null || paymentMethod == null) {
+            HttpSession session = request.getSession(true);
+            Cart cart = null;
+            String payment = null;
+            billDAO dao = new billDAO();
+            String payment_method = request.getParameter("payment_method");
+            //check card
+            Object o = session.getAttribute("cart");
+            if (o != null) {
+                cart = (Cart) o;
+            } else {
+                cart = new Cart();
+            }
+            User acc = null;
+            Object u = session.getAttribute("user");
+            if (o != null) {
+                if (u != null) {
+                    String address = request.getParameter("address");
+                    String phone = request.getParameter("phone");
+                    if (payment_method.equals("momo")) {
+                        payment = "MOMO";
+                    }
+                    if (payment_method.equals("vnpay")) {
+                        payment = "VNPAY";
+                    }
+                    if (payment_method.equals("cod")) {
+                        payment = "COD";
+                    }
+                    int phonenumber = Integer.parseInt(phone);
+                    acc = (User) u;
+                    dao.addOrder(acc, cart, payment, address, phonenumber);
+                    session.removeAttribute("cart");
+                    session.setAttribute("size", 0);
+                    if (payment_method.equals("cod")) {
+                        response.sendRedirect("home");
+                    }
+                    if (payment_method.equals("momo")) {
+                        model.Bill bill = dao.getBill();
+                        int total = Math.round(bill.getTotal());
+                        request.setAttribute("total", total);
+                        request.setAttribute("bill", bill);
+                        request.getRequestDispatcher("qrcode.jsp").forward(request, response);
+                    }
+                    if (payment_method.equals("vnpay")) {
+                            model.Bill bill = dao.getBill();
+                        int total = Math.round(bill.getTotal());
+                        request.setAttribute("total", total);
+                        request.setAttribute("bill", bill);
+                        request.getRequestDispatcher("vnpay_pay.jsp").forward(request, response);
+                        
+                        }
+//                        String queryUrl = query.toString();
+//                        String vnp_SecureHash = VnPayCommon.Config.hmacSHA512(VnPayCommon.Config.secretKey, hashData.toString());
+//                        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
+//                        String paymentUrl = VnPayCommon.Config.vnp_PayUrl + "?" + queryUrl;
+//                        com.google.gson.JsonObject job = new JsonObject();
+//                        job.addProperty("code", "00");
+//                        job.addProperty("message", "success");
+//                        job.addProperty("data", paymentUrl);
+//                        Gson gson = new Gson();
+//                        response.getWriter().write(gson.toJson(job));
+                    }
+                
+            } 
+                else {
+                response.sendRedirect("user?action=login");
+            }
+        }else {
+                if (payment_method.equals("momo")) {
+                    model.Bill bill = dao.getBill();
+                    int total = Math.round(bill.getTotal());
+                    request.setAttribute("total", total);
+                    request.setAttribute("bill", bill);
+                    request.getRequestDispatcher("qrcode.jsp").forward(request, response);
+                }
+                if (payment_method.equals("cod")) {
+                    response.sendRedirect("home");
+                }
+            }
+    }
+    catch (Exception e) {
             request.getRequestDispatcher("404.jsp").forward(request, response);
-            return;
-        }
-
-        String payment = null;
-        switch (paymentMethod) {
-            case "momo":
-                payment = "MOMO";
-                break;
-            case "vnpay":
-                payment = "VNPAY";
-                break;
-            case "cod":
-                payment = "COD";
-                break;
-            default:
-                request.getRequestDispatcher("404.jsp").forward(request, response);
-                return;
-        }
-
-        int phoneNumber;
-        try {
-            phoneNumber = Integer.parseInt(phone);
-        } catch (NumberFormatException e) {
-            request.getRequestDispatcher("404.jsp").forward(request, response);
-            return;
-        }
-
-        billDAO dao = new billDAO();
-        dao.addOrder(acc, cart, payment, address, phoneNumber);
-
-        session.removeAttribute("cart");
-        session.setAttribute("size", 0);
-
-        switch (paymentMethod) {
-            case "cod":
-                response.sendRedirect("home");
-                break;
-            case "momo":
-                model.Bill bill = dao.getBill();
-                int total = Math.round(bill.getTotal());
-                request.setAttribute("total", total);
-                request.setAttribute("bill", bill);
-                request.getRequestDispatcher("qrcode.jsp").forward(request, response);
-                break;
-            case "vnpay":
-                request.getRequestDispatcher("VN_Pay/vn_pay.jsp").forward(request, response);
-                break;
-        }
+    }
 
     } catch (Exception e) {
         // Log the error for debugging
@@ -136,6 +153,7 @@ public class Checkout extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(true);
+          HttpSession session = request.getSession(true);
         Object u = session.getAttribute("user");
         if (u != null) {
             request.getRequestDispatcher("checkout.jsp").forward(request, response);

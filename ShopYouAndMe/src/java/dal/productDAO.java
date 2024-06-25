@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import model.Product_Active;
 
 public class productDAO extends DBContext {
 
@@ -26,7 +27,25 @@ public class productDAO extends DBContext {
     public List<Product> getProduct() {
         List<Product> list = new ArrayList<>();
         String sql = "select c.category_name ,  p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img, p.category_id from  \n"
-                + "product p inner join category c on p.category_id = c.category_id";
+                + "product p inner join category c on p.category_id = c.category_id ";
+        try {
+            conn = new DBContext().getConnection();
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Category c = new Category(rs.getInt(8), rs.getString(1));
+                list.add(new Product(c, rs.getString(2), rs.getString(3), rs.getFloat(4), rs.getString(5), rs.getInt(6), rs.getString(7)));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return list;
+    }
+    public List<Product> getProductA() {
+        List<Product> list = new ArrayList<>();
+        String sql = "select c.category_name ,  p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img, p.category_id from  \n"
+                + "product p inner join category c on p.category_id = c.category_id inner join product_active pa on pa.product_id = p.product_id Where pa.active='True'";
         try {
             conn = new DBContext().getConnection();
             ps = conn.prepareStatement(sql);
@@ -42,13 +61,12 @@ public class productDAO extends DBContext {
         return list;
     }
 
-
     //search by price
     public List<Product> getProductByPrice(double a, double b) {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT c.category_name, p.product_id, p.product_name, p.product_price, p.product_describe, p.quantity, p.img, p.category_id "
-                + "FROM product p INNER JOIN category c ON p.category_id = c.category_id "
-                + "WHERE p.product_price >= ? AND p.product_price <= ? "
+                + "FROM product p INNER JOIN category c ON p.category_id = c.category_id inner join product_active pa on pa.product_id = p.product_id "
+                + "WHERE pa.active='True' AND p.product_price >= ? AND p.product_price <= ? "
                 + "ORDER BY p.product_price";
         try {
             conn = new DBContext().getConnection();
@@ -83,7 +101,7 @@ public class productDAO extends DBContext {
     public List<Product> getProductByPrice(int a) {
         List<Product> list = new ArrayList<>();
         String sql = "select c.category_name ,  p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img, p.category_id from  \n"
-                + "product p inner join category c on p.category_id = c.category_id Where p.product_price >=" + a + " Order By p.product_price";
+                + "product p inner join category c on p.category_id = c.category_id inner join product_active pa on pa.product_id = p.product_id Where pa.active ='True' And p.product_price >=" + a + " Order By p.product_price";
         try {
             conn = new DBContext().getConnection();
             ps = conn.prepareStatement(sql);
@@ -98,20 +116,21 @@ public class productDAO extends DBContext {
         }
         return list;
     }
-    // search mau
-     public List<Product> getProductColor(String a) {
+
+    // search by color
+    public List<Product> getProductByColor(String a) {
         List<Product> list = new ArrayList<>();
         String sql = "Select Distinct c.category_name ,  p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img, p.category_id, co.color\n"
                 + "FROM category c \n"
                 + "INNER JOIN product p ON p.category_id = c.category_id\n"
                 + "INNER JOIN product_color co ON co.product_id = p.product_id\n"
-                + "WHERE co.color = ?\n"
+                +" Inner join product_active pa on pa.product_id = p.product_id\n"
+                + "WHERE pa.active ='True' and co.color = ?\n"
                 + "ORDER BY p.product_id";
         try {
             conn = new DBContext().getConnection();
             ps = conn.prepareStatement(sql);
             ps.setString(1, a);
-
             rs = ps.executeQuery();
             while (rs.next()) {
                 Category c = new Category(rs.getInt(8), rs.getString(1));
@@ -173,8 +192,18 @@ public class productDAO extends DBContext {
                 ps.executeUpdate();
             }
         } catch (Exception e) {
-
         }
+               String sql3 = "INSERT INTO product_active (product_id,active) VALUES(?,?)";
+        try {
+            conn = new DBContext().getConnection();
+            Product_Active i =product.getActive();
+                ps = conn.prepareStatement(sql3);
+                ps.setString(1, product.getProduct_id());
+                ps.setString(2, i.getAcitve());
+                ps.executeUpdate();
+        }catch(Exception e){
+        }
+
     }
 
     public void ProductDelete(String product_id) {
@@ -207,7 +236,17 @@ public class productDAO extends DBContext {
         } catch (Exception e) {
             System.out.println(e);
         }
-
+        
+        String sql4 ="delete from product_active where product_id=?";
+             try {
+            conn = new DBContext().getConnection();
+            ps = conn.prepareStatement(sql4);
+            ps.setString(1, product_id);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+             
         String sq3 = "delete from product where product_id=?";
         try {
             conn = new DBContext().getConnection();
@@ -237,7 +276,7 @@ public class productDAO extends DBContext {
             ps.setString(!product.getImg().equalsIgnoreCase("images/") ? 7 : 6, product.getProduct_id());
             ps.executeUpdate();
 
-            // Delete existing sizes and colors
+            // Delete existing sizes and colors and actives
             String deleteSizesSQL = "DELETE FROM product_size WHERE product_id=?";
             ps = conn.prepareStatement(deleteSizesSQL);
             ps.setString(1, product.getProduct_id());
@@ -245,6 +284,11 @@ public class productDAO extends DBContext {
 
             String deleteColorsSQL = "DELETE FROM product_color WHERE product_id=?";
             ps = conn.prepareStatement(deleteColorsSQL);
+            ps.setString(1, product.getProduct_id());
+            ps.executeUpdate();
+            
+            String deleteActiveSQL = "DELETE FROM product_active WHERE product_id=?";
+            ps = conn.prepareStatement(deleteActiveSQL);
             ps.setString(1, product.getProduct_id());
             ps.executeUpdate();
 
@@ -265,6 +309,13 @@ public class productDAO extends DBContext {
                 ps.setString(2, color.getColor());
                 ps.executeUpdate();
             }
+            //Insert new Active
+                String insertActiveSQL = "INSERT INTO product_active (product_id, active) VALUES (?, ?)";
+                ps = conn.prepareStatement(insertActiveSQL);
+                ps.setString(1, product.getProduct_id());
+                ps.setString(2, product.getActive().getAcitve());
+                ps.executeUpdate();
+            
             conn.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -315,6 +366,20 @@ public class productDAO extends DBContext {
         }
         return list;
     }
+    public List<Product_Active> getActive(){
+        List<Product_Active> list = new ArrayList<>();
+         String sql = "select * from product_active";
+        try {
+            conn = new DBContext().getConnection();
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Product_Active(rs.getString(1), rs.getString(2)));
+            }
+        } catch (Exception e) {
+        }
+        return list;
+    }
 
     public Category getCategoryByName(String name) {
         String sql = "select * from Categories where category_name = ?";
@@ -344,7 +409,7 @@ public class productDAO extends DBContext {
 
     public List<Product> getTop10Product() {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT TOP 10 p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img FROM product p ORDER BY NEWID()";
+        String sql = "SELECT TOP 10 p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img FROM product p inner join product_active pa on pa.product_id = p.product_id Where pa.active ='True' ORDER BY NEWID()";
         try {
             conn = new DBContext().getConnection();
             ps = conn.prepareStatement(sql);
@@ -360,7 +425,7 @@ public class productDAO extends DBContext {
 
     public List<Product> getTrendProduct() {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT TOP 5 p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img FROM product p inner join bill_detail bd on p.product_id = bd.product_id\n"
+        String sql = "SELECT TOP 5 p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img FROM product p inner join bill_detail bd on p.product_id = bd.product_id inner join product_active pa on pa.product_id = p.product_id Where pa.active ='True' \n"
                 + "ORDER BY bd.quantity DESC";
         try {
             conn = new DBContext().getConnection();
@@ -398,7 +463,7 @@ public class productDAO extends DBContext {
 
     public List<Product> getProductLow() {
         List<Product> list = new ArrayList<>();
-        String sql = "select c.category_name , p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img from product p inner join category c on p.category_id = c.category_id ORDER BY p.product_price ASC";
+        String sql = "select c.category_name , p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img from product p inner join category c on p.category_id = c.category_id inner join product_active pa on pa.product_id = p.product_id Where pa.active ='True' ORDER BY p.product_price ASC";
         try {
             conn = new DBContext().getConnection();
             ps = conn.prepareStatement(sql);
@@ -432,7 +497,7 @@ public class productDAO extends DBContext {
 
     public List<Product> getProductAZ() {
         List<Product> list = new ArrayList<>();
-        String sql = "select c.category_name , p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img from product p inner join category c on p.category_id = c.category_id ORDER BY p.product_name";
+        String sql = "select c.category_name , p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img from product p inner join category c on p.category_id = c.category_id inner join product_active pa on pa.product_id = p.product_id Where pa.active ='True' ORDER BY p.product_name";
         try {
             conn = new DBContext().getConnection();
             ps = conn.prepareStatement(sql);
@@ -458,7 +523,7 @@ public class productDAO extends DBContext {
 
     public List<Product> getProductByCategory(int category_id) {
         List<Product> list = new ArrayList<>();
-        String sql = "select c.category_name , p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img from product p inner join category c on p.category_id = c.category_id WHERE p.category_id=?";
+        String sql = "select c.category_name , p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img from product p inner join category c on p.category_id = c.category_id inner join product_active pa on pa.product_id = p.product_id Where pa.active ='True' And p.category_id=?";
         try {
             conn = new DBContext().getConnection();
             ps = conn.prepareStatement(sql);
@@ -591,8 +656,8 @@ public class productDAO extends DBContext {
     public List<Product> SearchAll(String text) {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT DISTINCT c.category_name , p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img \n"
-                + "FROM product p inner join category c on c.category_id = p.category_id inner join product_color ps on p.product_id = ps.product_id\n"
-                + "WHERE product_name LIKE ? OR  product_price LIKE ? OR ps.color LIKE ? OR c.category_name LIKE ?";
+                + "FROM product p inner join category c on c.category_id = p.category_id inner join product_color ps on p.product_id = ps.product_id Inner Join Product_Active pa On pa.product_id =p.product_id\n"
+                + "WHERE pa.active ='True' And product_name LIKE ? OR  product_price LIKE ? OR ps.color LIKE ? OR c.category_name LIKE ?";
 
         try {
             conn = new DBContext().getConnection();
@@ -610,7 +675,6 @@ public class productDAO extends DBContext {
         }
         return list;
     }
-    
 
     public static void main(String[] args) {
         productDAO dao = new productDAO();
