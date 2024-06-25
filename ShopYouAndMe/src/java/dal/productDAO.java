@@ -656,8 +656,8 @@ public class productDAO extends DBContext {
     public List<Product> SearchAll(String text) {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT DISTINCT c.category_name , p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img \n"
-                + "FROM product p inner join category c on c.category_id = p.category_id inner join product_color ps on p.product_id = ps.product_id\n"
-                + "WHERE product_name LIKE ? OR  product_price LIKE ? OR ps.color LIKE ? OR c.category_name LIKE ?";
+                + "FROM product p inner join category c on c.category_id = p.category_id inner join product_color ps on p.product_id = ps.product_id Inner Join Product_Active pa On pa.product_id =p.product_id\n"
+                + "WHERE pa.active ='True' And product_name LIKE ? OR  product_price LIKE ? OR ps.color LIKE ? OR c.category_name LIKE ?";
 
         try {
             conn = new DBContext().getConnection();
