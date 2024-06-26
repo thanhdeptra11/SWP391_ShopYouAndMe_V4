@@ -130,8 +130,7 @@ public class billDAO extends DBContext {
         }
         return bills;
     }
-    
-    public List<BillDetail> getDetail(int bill_id){
+   
 
     public List<BillDetail> getDetail(int bill_id) {
         List<BillDetail> list = new ArrayList<>();
@@ -152,7 +151,6 @@ public class billDAO extends DBContext {
         return list;
     }
     
-    public void updatePayment(String payment, int bill_id){
 
     public void updatePayment(String payment, int bill_id) {
         String sql = "update bill set payment= ? where bill_id = ?";
@@ -171,7 +169,6 @@ public class billDAO extends DBContext {
         }
     }
     
-    public List<Bill> getBillByID(int user_id){
 
     public List<Bill> getBillByID(int user_id) {
         List<Bill> list = new ArrayList<>();
@@ -188,8 +185,7 @@ public class billDAO extends DBContext {
         }
         return list;
     }
-    
-    public List<Bill> getBillByDay(){
+   
 
     public List<Bill> getBillByDay() {
         List<Bill> list = new ArrayList<>();
@@ -209,7 +205,7 @@ public class billDAO extends DBContext {
     }
 
 
-    public double getTotalPaidByDate(Date date) {
+      public double getTotalPaidByDate(Date date) {
         double totalPaid = 0;
         String sql = "SELECT SUM(total) FROM bill WHERE date = ?";
         try {
