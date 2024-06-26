@@ -20,8 +20,6 @@ import java.util.Date;
 import java.util.List;
 
 public class billDAO extends DBContext {
-
-public class  billDAO extends DBContext{
     Connection conn = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
@@ -30,10 +28,9 @@ public class  billDAO extends DBContext{
     public void addOrder(User u, Cart cart, String payment, String address, int phone) {
         LocalDate curDate = java.time.LocalDate.now();
         String date = curDate.toString();
-        
+       
 
-        try {
-            String sql="insert into [bill] values(?,?,?,?,?,?)";
+           try {
             String sql = "insert into [bill] values(?,?,?,?,?,?)";
             conn = new DBContext().getConnection();
             ps = conn.prepareStatement(sql);
@@ -44,29 +41,10 @@ public class  billDAO extends DBContext{
             ps.setString(5, date);
             ps.setInt(6, phone);
             ps.executeUpdate();
-            
-            String sql1="select top 1 bill_id from [bill] order by bill_id desc";
-
             String sql1 = "select top 1 bill_id from [bill] order by bill_id desc";
-            ps = conn.prepareStatement(sql1);
+             ps = conn.prepareStatement(sql1);
             rs = ps.executeQuery();
-            
-            if(rs.next()){
-                int bill_id=rs.getInt(1);
-                for(Item i:cart.getItems()){
-                String sql2="insert into [bill_detail] values(?,?,?,?,?,?)";
-                double total = i.getQuantity()*i.getProduct().getProduct_price();
-                ps = conn.prepareStatement(sql2);
-                ps.setInt(1, bill_id);
-                ps.setString(2, i.getProduct().getProduct_id());
-                ps.setInt(3, i.getQuantity());
-                ps.setString(4, i.getSize());
-                ps.setString(5, i.getColor());
-                ps.setDouble(6, total);
-                ps.executeUpdate();
-            }
-
-            if (rs.next()) {
+             if (rs.next()) {
                 int bill_id = rs.getInt(1);
                 for (Item i : cart.getItems()) {
                     String sql2 = "insert into [bill_detail] values(?,?,?,?,?,?)";
@@ -81,8 +59,7 @@ public class  billDAO extends DBContext{
                     ps.executeUpdate();
                 }
             }
-
-            String sql3 = "update product set quantity = quantity - ? "
+              String sql3 = "update product set quantity = quantity - ? "
                         + "where product_id = ?";
                     + "where product_id = ?";
             ps = conn.prepareStatement(sql3);
