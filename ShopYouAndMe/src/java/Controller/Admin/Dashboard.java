@@ -55,6 +55,7 @@ protected void processRequest(HttpServletRequest request, HttpServletResponse re
             List<Double> paidList = new ArrayList<>();
             List<Double> unpaidList = new ArrayList<>();
             List<Date> dateList = new ArrayList<>();
+            iiiii
             
             for (Bill bill : billbyday) {
                 double totalPaid = bdao.getTotalPaidByDate(bill.getDate());

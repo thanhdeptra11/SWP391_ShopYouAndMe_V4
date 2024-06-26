@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
+import java.util.Iterator;
 
 public class Cart extends HttpServlet {
 
@@ -63,6 +63,10 @@ public class Cart extends HttpServlet {
             request.getRequestDispatcher("product?action=productdetail&product_id=" + product_id).forward(request, response);
         }
         if (action.equalsIgnoreCase("showcart")) {
+             model.Cart choosenCart = (model.Cart) request.getSession().getAttribute("choosenCart");
+            if (choosenCart != null) {
+                session.setAttribute("totalMoney", choosenCart.getTotalMoney());
+            }
             request.getRequestDispatcher("cart.jsp").forward(request, response);
         }
         if (action.equals("deletecart")) {
@@ -73,7 +77,20 @@ public class Cart extends HttpServlet {
             } else {
                 cart = new model.Cart();
             }
+            model.Cart cartChoosen = (model.Cart) request.getSession().getAttribute("choosenCart");
             String product_id = request.getParameter("product_id");
+            if (cartChoosen != null) {
+                List<Item> list = cartChoosen.getItems();
+                for (Iterator<Item> iterator = list.iterator(); iterator.hasNext();) {
+                    Item value = iterator.next();
+                    if (value.getProduct().getProduct_id().equals(product_id)) {
+                        iterator.remove();
+                    }
+                }
+                session.setAttribute("totalMoney", cartChoosen.getTotalMoney());
+            }
+
+            session.setAttribute("choosenCart", cartChoosen);
             cart.removeItem(product_id);
             List<Item> list = cart.getItems();
             session.setAttribute("cart", cart);
@@ -81,7 +98,19 @@ public class Cart extends HttpServlet {
             session.setAttribute("size", list.size());
             response.sendRedirect("cart.jsp");
             
-            
+             String Squantity = request.getParameter("quantity");
+        //String product_id = request.getParameter("product_id");
+        String size = request.getParameter("size");
+        String color = request.getParameter("color");
+        try {
+            int quantity = Integer.parseInt(Squantity);
+            productDAO pdao = new productDAO();
+            Product product = pdao.getProductByID(product_id);
+            Item item = new Item(product, quantity, size, color);
+            cart.addItem(item);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         }
 
     }
