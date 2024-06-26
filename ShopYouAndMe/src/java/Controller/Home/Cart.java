@@ -98,7 +98,19 @@ public class Cart extends HttpServlet {
             session.setAttribute("size", list.size());
             response.sendRedirect("cart.jsp");
             
-            
+             String Squantity = request.getParameter("quantity");
+        //String product_id = request.getParameter("product_id");
+        String size = request.getParameter("size");
+        String color = request.getParameter("color");
+        try {
+            int quantity = Integer.parseInt(Squantity);
+            productDAO pdao = new productDAO();
+            Product product = pdao.getProductByID(product_id);
+            Item item = new Item(product, quantity, size, color);
+            cart.addItem(item);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         }
 
     }
