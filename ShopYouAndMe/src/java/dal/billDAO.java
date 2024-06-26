@@ -102,7 +102,6 @@ public class billDAO extends DBContext {
             rs = ps.executeQuery();
             while (rs.next()) {
                 return(new Bill(rs.getInt(1),rs.getFloat(2), rs.getDate(3)));
-                return (new Bill(rs.getInt(1), rs.getFloat(2), rs.getDate(3)));
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -113,9 +112,6 @@ public class billDAO extends DBContext {
 
     public List<Bill> getBillBetweenDates(String startDate, String endDate) {
         List<Bill> bills = new ArrayList<>();
-        String sql = "SELECT b.bill_id, u.user_name, b.phone, b.address, b.date, b.total, b.payment " +
-                     "FROM bill b INNER JOIN users u ON b.user_id = u.user_id " +
-                     "WHERE b.date BETWEEN ? AND ?";
         String sql = "SELECT b.bill_id, u.user_name, b.phone, b.address, b.date, b.total, b.payment "
                 + "FROM bill b INNER JOIN users u ON b.user_id = u.user_id "
                 + "WHERE b.date BETWEEN ? AND ?";
