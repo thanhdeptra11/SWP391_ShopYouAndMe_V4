@@ -305,7 +305,17 @@ public class Product extends HttpServlet {
             request.setAttribute("ProductData", product);
             request.getRequestDispatcher("shop_category.jsp").forward(request, response);
         }
-
+        if (action.equalsIgnoreCase("searchByPrice")) {
+            productDAO dao = new productDAO();
+            List<Category> category = dao.getCategory();
+            String[] choose = request.getParameterValues("price");
+            List<model.Product> list1 = dao.getProductByPrice(0, 50000);
+            List<model.Product> list2 = dao.getProductByPrice(50000, 200000);
+            List<model.Product> list3 = dao.getProductByPrice(200000, 500000);
+            List<model.Product> list4 = dao.getProductByPrice(500000, 1000000);
+            List<model.Product> list5 = dao.getProductByPrice(1000000);
+            List<model.Product> list0 = dao.getProduct();
+            List<model.Product> listc = new ArrayList<>();
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
