@@ -41,7 +41,6 @@
                                 <li><a href="home">home</a></li>
                                 <li>/</li>
                                 <li>product details</li>
-
                             </ul>
                         </div>
                     </div>
@@ -71,11 +70,9 @@
                             <form action="cart?product_id=${ProductData.product_id}" method="POST">
                                 <h1>${ProductData.product_name}</h1>
                                 <div class="product_price">
-                                    <label>Giá tiền: </label>
                                     <span class="current_price">${ProductData.product_price} VNĐ</span>
                                 </div>
                                 <div class="product_desc">
-                                    <label>Mô tả sản phẩm: </label>
                                     <p>${ProductData.product_describe}</p>
                                 </div>
 
@@ -98,8 +95,7 @@
                                 <div class="product_variant quantity">
                                     <label>quantity</label>
                                     <input min="1" max="${ProductData.quantity}" name="quantity" type="number">
-                                    <button class="button" type="submit">Thêm vào giỏ hàng</button> 
-                                    <button class="button" type="submit" onclick="setAction('buynow')">Mua ngay</button>                                  
+                                    <button class="button" type="submit">Thêm vào giở hàng</button>  
                                 </div>
                             </form>
                         </div>
@@ -109,60 +105,6 @@
         </div>
         <!--product details end-->
         <!--product info end-->
-
-        <div class="form-container">
-            <form action="product" method="POST">
-                <input type="hidden" name="action" value="addRating">
-                <input type="hidden" name="product_id" value="${ProductData.product_id}">
-                <input type="hidden" name="user_id" value="${user.user_id}">
-                <h3>Đánh giá sản phẩm</h3>
-                <select name="rating" id="star-rating">
-                    <option value="1">1&#9733;</option>
-                    <option value="2">2&#9733;&#9733;</option>
-                    <option value="3">3&#9733;&#9733;&#9733;</option>
-                    <option value="4">4&#9733;&#9733;&#9733;&#9733;</option>
-                    <option value="5">5&#9733;&#9733;&#9733;&#9733;&#9733;</option>
-                </select>
-                <button type="submit">Gửi đánh giá</button>
-            </form>
-        </div>
-
-
-        <!-- Form for adding comment -->
-        <div class="form-container">
-            <form action="product" method="POST">
-                <input type="hidden" name="action" value="addComment">
-                <input type="hidden" name="product_id" value="${ProductData.product_id}">
-                <input type="hidden" name="user_id" value="${user.user_id}">
-                <h3>Bình luận sản phẩm</h3>
-                <textarea name="comment" rows="4" cols="50" placeholder="Nhập bình luận của bạn"></textarea>
-                <button type="submit">Gửi bình luận</button>
-            </form>
-        </div>
-
-
-
-        <div class="product_reviews">
-            <h3>Đánh giá và Bình luận</h3>
-            <h4>Đánh giá trung bình: 
-                <fmt:formatNumber value="${averageRating}" maxFractionDigits="1"/> <span class="star">&#9733;</span>
-            </h4>
-            <c:forEach items="${ratings}" var="rating">
-                <div class="rating">
-                    <p>${rating.rating}&#9733</p>
-                    <p>Bởi: ${user.user_name}</p>
-                    <p>Ngày: <fmt:formatDate value="${rating.createdAt}" pattern="dd/MM/yyyy"/></p>
-                </div>
-            </c:forEach>
-
-            <h5>Bình luận:</h5>
-            <c:forEach items="${comments}" var="c">
-                <div class="comment">
-                    <p>Bởi: ${user.user_name}</p>
-                    <p>${c.comment}</p>
-                </div>
-            </c:forEach>
-        </div>
 
         <!--product section area start-->
         <section class="product_section related_product">
@@ -200,7 +142,7 @@
         <!--footer area start-->
         <jsp:include page="layout/footer.jsp"/>
         <!--footer area end-->
-
+        
         <!-- Plugins JS -->
         <script src="assets/js/plugins.js"></script>
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -215,14 +157,6 @@
 //                    icon: "success",
 //            })
 //            }
-
-
-                                        function setAction(action) {
-                                            document.getElementById('action').value = action;
-                                            if (action === 'buynow') {
-                                                document.getElementById('productForm').action = 'cart?action=showcart';
-                                            }
-                                        }
         </script>
     </body>
 
