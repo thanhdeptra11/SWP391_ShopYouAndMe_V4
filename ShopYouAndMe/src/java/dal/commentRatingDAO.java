@@ -1,6 +1,5 @@
 package dal;
 
-import model.Rating;
 import model.Comment;
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,30 +13,24 @@ public class commentRatingDAO extends DBContext {
     PreparedStatement ps = null;
     ResultSet rs = null;
 
-   
-
-    public void addRating(String productId, String userId, int rating) {
-        String sql = "INSERT INTO product_rating (product_id, user_id, rating) VALUES (?, ?, ?)";
-        try {
-            conn = new DBContext().getConnection();
-            ps = conn.prepareStatement(sql);
-            ps.setString(1, productId);
-            ps.setString(2, userId);
-            ps.setInt(3, rating);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
-    public void addComment(String productId, String userId, String comment) {
-        String sql = "INSERT INTO product_comment (product_id, user_id, comment) VALUES (?, ?, ?)";
+    public void addComment(String productId, String userId, String comment, int rating, String user_name) {
+        String sql = "INSERT INTO product_comment (product_id, user_id, comment, rating, created_at, user_name) "
+                + "SELECT ?, ?, ?, ?, GETDATE(), ? "
+                + "WHERE EXISTS ("
+                + "    SELECT 1 FROM bill b "
+                + "    JOIN bill_detail bi ON b.bill_id = bi.bill_id "
+                + "    WHERE b.user_id = ? AND bi.product_id = ?"
+                + ")";
         try {
             conn = new DBContext().getConnection();
             ps = conn.prepareStatement(sql);
             ps.setString(1, productId);
             ps.setString(2, userId);
             ps.setString(3, comment);
+            ps.setInt(4, rating);
+            ps.setString(5, user_name);
+            ps.setString(6, userId); // Tham số để kiểm tra user_id trong bảng bill
+            ps.setString(7, productId); // Tham số để kiểm tra product_id trong bảng bill_detail
             ps.executeUpdate();
         } catch (Exception e) {
             System.out.println(e);
@@ -46,7 +39,10 @@ public class commentRatingDAO extends DBContext {
 
     public List<Comment> getCommentsByProductId(String productId) {
         List<Comment> comments = new ArrayList<>();
-        String sql = "SELECT c.*, u.user_name FROM product_comment c JOIN users u ON c.user_id = u.user_id WHERE c.product_id = ? ORDER BY c.created_at DESC";
+        String sql = "SELECT DISTINCT c.* FROM product_comment c JOIN users u ON c.user_id = u.user_id\n"
+                + "Inner Join bill b On b.user_id=c.user_id\n"
+                + "Inner Join bill_detail bi On bi.bill_id = b.bill_id And bi.product_id= c.product_id\n"
+                + "WHERE c.product_id = ? ORDER BY c.created_at DESC";
         try {
             conn = new DBContext().getConnection();
             ps = conn.prepareStatement(sql);
@@ -59,6 +55,8 @@ public class commentRatingDAO extends DBContext {
                 comment.setUserId(rs.getInt("user_id"));
                 comment.setComment(rs.getString("comment"));
                 comment.setCreatedAt(rs.getTimestamp("created_at"));
+                comment.setRating(rs.getInt(5));
+                comment.setUser_name(rs.getString("user_name"));
                 comments.add(comment);
             }
         } catch (Exception e) {
@@ -67,31 +65,28 @@ public class commentRatingDAO extends DBContext {
         return comments;
     }
 
-    public List<Rating> getRatingsByProductId(String productId) {
-        List<Rating> ratings = new ArrayList<>();
-        String sql = "SELECT r.*, u.user_name FROM product_rating r JOIN users u ON r.user_id = u.user_id WHERE r.product_id = ? ORDER BY r.created_at DESC";
+    public List<Comment> getComment() {
+        List<Comment> comments = new ArrayList<>();
+        String sql = "SELECT * from product_comment";
         try {
             conn = new DBContext().getConnection();
             ps = conn.prepareStatement(sql);
-            ps.setString(1, productId);
             rs = ps.executeQuery();
             while (rs.next()) {
-                Rating rating = new Rating();
-                rating.setId(rs.getInt("id"));
-                rating.setProductId(rs.getString("product_id"));
-                rating.setUserId(rs.getInt("user_id"));
-                rating.setRating(rs.getInt("rating"));
-                rating.setCreatedAt(rs.getTimestamp("created_at"));
-                ratings.add(rating);
+                comments.add(new Comment(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getString(6), rs.getTimestamp(4)));
             }
+
         } catch (Exception e) {
             System.out.println(e);
         }
-        return ratings;
+
+        return comments;
     }
 
     public double getAverageRatingForProduct(String productId) {
-        String sql = "SELECT AVG(rating) as avg_rating FROM product_rating WHERE product_id = ?";
+        String sql = "SELECT ROUND(CAST(SUM(rating) AS FLOAT) / CAST(COUNT(rating) AS FLOAT), 1) AS avg_rating\n"
+                + "FROM product_comment\n"
+                + "WHERE product_id = ?";
         try {
             conn = new DBContext().getConnection();
             ps = conn.prepareStatement(sql);
@@ -105,63 +100,43 @@ public class commentRatingDAO extends DBContext {
         }
         return 0;
     }
- public boolean hasUserCommented(String productId, String userId){
-    String sql = "SELECT COUNT(*) FROM product_comment WHERE product_id = ? AND user_id = ?";
-    try {
-        conn = new DBContext().getConnection();
-        ps = conn.prepareStatement(sql);
-        ps.setString(1, productId);
-        ps.setString(2, userId);
-        rs = ps.executeQuery();
-        if (rs.next()) {
-            return rs.getInt(1) > 0;
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }   catch (Exception ex) {
+
+    public boolean hasUserCommented(String productId, String userId) {
+        String sql = "SELECT COUNT(*) FROM product_comment WHERE product_id = ? AND user_id = ?";
+        try {
+            conn = new DBContext().getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, productId);
+            ps.setString(2, userId);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception ex) {
             Logger.getLogger(commentRatingDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-        closeConnection();
-    }
-    return false;
-}
- public boolean hasUserRated(String productId, String userId){
-    String sql = "SELECT COUNT(*) FROM product_rating WHERE product_id = ? AND user_id = ?";
-    try {
-        conn = new DBContext().getConnection();
-        ps = conn.prepareStatement(sql);
-        ps.setString(1, productId);
-        ps.setString(2, userId);
-        rs = ps.executeQuery();
-        if (rs.next()) {
-            return rs.getInt(1) > 0;
+            closeConnection();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }   catch (Exception ex) {
-            Logger.getLogger(commentRatingDAO.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-        closeConnection();
+        return false;
     }
-    return false;
-}
 
 // Helper method to close connection, PreparedStatement, and ResultSet
-private void closeConnection() {
-    try {
-        if (rs != null) {
-            rs.close();
+    private void closeConnection() {
+        try {
+            if (rs != null) {
+                rs.close();
+            }
+            if (ps != null) {
+                ps.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        if (ps != null) {
-            ps.close();
-        }
-        if (conn != null) {
-            conn.close();
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
     }
-}
 
- 
 }
