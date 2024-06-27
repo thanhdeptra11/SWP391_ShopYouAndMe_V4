@@ -11,7 +11,8 @@ public class Comment {
     public int userId;
     public String comment;
     public Timestamp createdAt;
-
+    public int rating;
+    public String user_name;
     public Comment() {
     }
 
@@ -22,6 +23,35 @@ public class Comment {
         this.comment = comment;
         this.createdAt = createdAt;
     }
+
+    public Comment(int id, String productId, int userId, String comment, Timestamp createdAt, int rating) {
+        this.id = id;
+        this.productId = productId;
+        this.userId = userId;
+        this.comment = comment;
+        this.createdAt = createdAt;
+        this.rating = rating;
+    }
+
+    public Comment(int id, String productId, int userId, String comment, Timestamp createdAt, int rating, String user_name) {
+        this.id = id;
+        this.productId = productId;
+        this.userId = userId;
+        this.comment = comment;
+        this.createdAt = createdAt;
+        this.rating = rating;
+        this.user_name = user_name;
+    }
+
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
+    }
+    
+    
 
     public int getId() {
         return id;
@@ -62,6 +92,14 @@ public class Comment {
 
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 
    

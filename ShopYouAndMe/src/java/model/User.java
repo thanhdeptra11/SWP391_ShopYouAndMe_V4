@@ -9,12 +9,11 @@ public class User {
     String dateOfBirth; 
     String address;     
     String phoneNumber; 
-    boolean banned;
 
     public User() {
     }
 
-    public User(int user_id, String user_name, String user_email, String user_pass, String isAdmin, String dateOfBirth, String address, String phoneNumber,boolean  banned) {
+    public User(int user_id, String user_name, String user_email, String user_pass, String isAdmin, String dateOfBirth, String address, String phoneNumber) {
         this.user_id = user_id;
         this.user_name = user_name;
         this.user_email = user_email;
@@ -23,19 +22,10 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.banned = banned;
     }
 
     public User(String user_name) {
         this.user_name = user_name;
-    }
-
-    public boolean isBanned() {
-        return banned;
-    }
-
-    public void setBanned(boolean banned) {
-        this.banned = banned;
     }
 
 
