@@ -7,8 +7,6 @@ package Controller.Home;
 
 import dal.productDAO;
 import model.Category;
-import model.Color;
-import model.Size;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
