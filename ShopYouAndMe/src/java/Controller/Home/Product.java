@@ -5,10 +5,9 @@
  */
 package Controller.Home;
 
+import dal.commentRatingDAO;
 import dal.productDAO;
 import model.Category;
-import model.Color;
-import model.Size;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -16,6 +15,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 
 public class Product extends HttpServlet {
@@ -91,11 +91,34 @@ public class Product extends HttpServlet {
             model.Product product = c.getProductByID(product_id);
             int category_id = product.getCate().getCategory_id();
             List<model.Product> productByCategory = c.getProductByCategory(category_id);
+            commentRatingDAO crDAO = new commentRatingDAO();
+            List<model.Comment> comments = crDAO.getCommentsByProductId(product_id);
+            double averageRating = crDAO.getAverageRatingForProduct(product_id);
             request.setAttribute("ProductData", product);
             request.setAttribute("SizeData", sizeList);
             request.setAttribute("ColorData", colorList);
             request.setAttribute("ProductByCategory", productByCategory);
+            request.setAttribute("comments", comments);
+            request.setAttribute("averageRating", averageRating);
             request.getRequestDispatcher("product-details.jsp").forward(request, response);
+        } else if (action.equalsIgnoreCase("addComment")) {
+            String productId = request.getParameter("product_id");
+            String userId = request.getParameter("user_id");  // Retrieve userId from session
+            String userName = request.getParameter("user_name");  // Retrieve userId from session
+            int rating = Integer.parseInt(request.getParameter("rating"));
+            String commentText = request.getParameter("comment");
+
+            // Call DAO method to add rating
+            commentRatingDAO dao = new commentRatingDAO();
+            if (dao.hasUserCommented(productId, userId)) {
+                HttpSession session = request.getSession();
+                session.setAttribute("errorMessage", "Bạn đã đánh giá và bình luận cho sản phẩm này rồi.");
+            } else {
+                dao.addComment(productId, userId, commentText,rating,userName);
+                HttpSession session = request.getSession();
+                session.setAttribute("successMessage", "Đánh giá và bình luận thành công khi mà bạn đã mua hàng");
+            }
+            response.sendRedirect("product?action=productdetail&product_id=" + productId);
         }
 
         if (action.equals("sort")) {
@@ -201,37 +224,60 @@ public class Product extends HttpServlet {
             productDAO dao = new productDAO();
             List<Category> category = dao.getCategory();
             String[] choose = request.getParameterValues("price");
-            List<model.Product> list0 = dao.getProduct();
             List<model.Product> list1 = dao.getProductByPrice(0, 50000);
             List<model.Product> list2 = dao.getProductByPrice(50000, 200000);
             List<model.Product> list3 = dao.getProductByPrice(200000, 500000);
             List<model.Product> list4 = dao.getProductByPrice(500000, 1000000);
             List<model.Product> list5 = dao.getProductByPrice(1000000);
+            List<model.Product> list0 = dao.getProduct();
             List<model.Product> listc = new ArrayList<>();
 
-            if (choose == null || choose.length == 0 || choose.length == 5) {
-               listc.addAll(list0);
-            }
-            else {
-                for (String price : choose) {
-                    switch (price) {
-                        case "0":
-                            listc.addAll(list1);
-                            break;
-                        case "1":
-                            listc.addAll(list2);
-                            break;
-                        case "2":
-                            listc.addAll(list3);
-                            break;
-                        case "3":
-                            listc.addAll(list4);
-                            break;
-                        case "4":
-                            listc.addAll(list5);
-                    }
+            // Combine selected price range lists
+            if (choose.length == 5) {
+                listc.addAll(list1);
+                listc.addAll(list2);
+                listc.addAll(list3);
+                listc.addAll(list4);
+                listc.addAll(list5);
+            } else if (choose.length == 2) {
+                if (!choose[0].equals("0") && !choose[1].equals("0")) {
+                    listc.addAll(list2);
+                    listc.addAll(list3);
                 }
-        }
+                if (!choose[0].equals("1") && !choose[1].equals("1")) {
+                    listc.addAll(list1);
+                    listc.addAll(list3);
+                }
+                if (!choose[0].equals("2") && !choose[1].equals("2")) {
+                    listc.addAll(list1);
+                    listc.addAll(list2);
+                }
+            } else if (choose.length == 1) {
+                switch (choose[0]) {
+                    case "0":
+                        listc.addAll(list1);
+                        break;
+                    case "1":
+                        listc.addAll(list2);
+                        break;
+                    case "2":
+                        listc.addAll(list3);
+                        break;
+                    case "3":
+                        listc.addAll(list4);
+                        break;
+                    case "4":
+                        listc.addAll(list5);
+                        break;
+                    default:
+                        listc.addAll(list0);
+                        break;
+                }
+            } else {
+                listc.addAll(list0);
+            }
+
+            // Pagination logic
             int page, numperpage = 9;
             int size = listc.size();
             int num = (size % 9 == 0 ? (size / 9) : ((size / 9)) + 1);// Number of pages
@@ -249,9 +295,8 @@ public class Product extends HttpServlet {
             request.setAttribute("num", num);
             request.setAttribute("CategoryData", category);
             request.setAttribute("ProductData", product);
-            request.getRequestDispatcher("shop_category.jsp").forward(request, response); 
+            request.getRequestDispatcher("shop_category.jsp").forward(request, response);
         }
-        //color
         if (action.equalsIgnoreCase("SearchByColor")) {
             productDAO dao = new productDAO();
             List<Category> category = dao.getCategory();
@@ -305,20 +350,10 @@ public class Product extends HttpServlet {
             request.setAttribute("ProductData", product);
             request.getRequestDispatcher("shop_category.jsp").forward(request, response);
         }
-        if (action.equalsIgnoreCase("searchByPrice")) {
-            productDAO dao = new productDAO();
-            List<Category> category = dao.getCategory();
-            String[] choose = request.getParameterValues("price");
-            List<model.Product> list1 = dao.getProductByPrice(0, 50000);
-            List<model.Product> list2 = dao.getProductByPrice(50000, 200000);
-            List<model.Product> list3 = dao.getProductByPrice(200000, 500000);
-            List<model.Product> list4 = dao.getProductByPrice(500000, 1000000);
-            List<model.Product> list5 = dao.getProductByPrice(1000000);
-            List<model.Product> list0 = dao.getProduct();
-            List<model.Product> listc = new ArrayList<>();
+
     }
 
-// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

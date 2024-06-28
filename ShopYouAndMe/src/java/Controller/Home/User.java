@@ -50,7 +50,7 @@ public class User extends HttpServlet {
             userDAO dao = new userDAO();
             model.User user = dao.checkUser(user_email, user_pass);
             if (user == null) {
-                request.setAttribute("error", "Đăng nhập không thành công, vui lòng kiểm tra lại !");
+                request.setAttribute("error", "Tài khoản không tồn tại !");
                 request.getRequestDispatcher("user?action=login").forward(request, response);
             } else {
                 HttpSession session = request.getSession();
@@ -166,12 +166,10 @@ public class User extends HttpServlet {
             userDAO da = new userDAO();
             String email = request.getParameter("user_email");
             String pass = request.getParameter("user_pass");
-            String name = request.getParameter("user_name");
             String repass = request.getParameter("re_pass");
             String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
             System.out.println(gRecaptchaResponse);
-            //check recaptcha verify
-            boolean verify = VerifyRecaptcha.verify(gRecaptchaResponse);
+             boolean verify = VerifyRecaptcha.verify(gRecaptchaResponse);
             String passwordRegex = "^(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{6,}$";
             if (!pass.matches(passwordRegex)) {
                 request.setAttribute("error_match", "Mật khẩu phải có ít nhất 6 ký tự, bao gồm ít nhất một chữ cái viết hoa và một chữ số");
@@ -183,10 +181,10 @@ public class User extends HttpServlet {
                 request.getRequestDispatcher("login.jsp").forward(request, response);
                 return;
             }
+
             if (!pass.equals(repass)) {
                 request.setAttribute("error_rePass", "Vui lòng nhập lại mật khẩu cho đúng");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
-                return;
             } else {
                 model.User a = da.checkAcc(email);
                 if (a == null) {
@@ -200,7 +198,6 @@ public class User extends HttpServlet {
                         session.setAttribute("userc", userc);
                         session.setAttribute("email", email);
                         session.setAttribute("pass", pass);
-                        session.setAttribute("user_name", name);
                         response.sendRedirect("verify.jsp");
                         return;
                     }
