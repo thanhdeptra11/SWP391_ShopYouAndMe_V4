@@ -189,6 +189,7 @@ public class ProductManager extends HttpServlet {
                     dao.updateProduct(product, cid, list2, list);
                     response.sendRedirect("productmanager");
                     return;
+                    ///////////////////
                 }else if (action.equalsIgnoreCase("insertproduct")) {
                     String product_id = request.getParameter("product_id");
                     String category_id = request.getParameter("category_id");
@@ -249,6 +250,51 @@ public class ProductManager extends HttpServlet {
         RequestDispatcher dd = request.getRequestDispatcher(page);
         dd.forward(request, response);
 
+    }
+     private void handleExcelData(Row row) {
+//                    String name = row.getCell(0).getStringCellValue();
+//                        int age = (int) row.getCell(1).getNumericCellValue();
+
+        String product_id = row.getCell(0).getStringCellValue();
+        int category_id = (int) row.getCell(1).getNumericCellValue();
+        String product_name = row.getCell(2).getStringCellValue();
+        float product_price = (float) row.getCell(3).getNumericCellValue();
+        String product_size = row.getCell(4).getStringCellValue();
+        String product_color = row.getCell(5).getStringCellValue();
+        int product_quantity = (int) row.getCell(6).getNumericCellValue();
+        String product_img = "images/" + row.getCell(7).getStringCellValue();
+        String product_describe = row.getCell(8).getStringCellValue();
+        String active = "True";
+
+        productDAO dao = new productDAO();
+        Category cate = new Category(category_id);
+        String[] size_rw = product_size.split("\\s*,\\s*");
+        String[] color_rw = product_color.split("\\s*,\\s*");
+
+        List<Size> list = new ArrayList<>();
+        for (String s : size_rw) {
+            list.add(new Size(product_id, s));
+        }
+
+        List<Color> list2 = new ArrayList<>();
+        for (String c : color_rw) {
+            list2.add(new Color(product_id, c));
+        }
+
+        Product product = new Product();
+        Product_Active Pa = new Product_Active(product_id, active);
+        product.setCate(cate);
+        product.setProduct_id(product_id);
+        product.setProduct_name(product_name);
+        product.setProduct_price(product_price);
+        product.setProduct_describe(product_describe);
+        product.setQuantity(product_quantity);
+        product.setImg(product_img);
+        product.setSize(list);
+        product.setColor(list2);
+        product.setActive(Pa);
+        //insert product by page
+        dao.insertProduct(product);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
