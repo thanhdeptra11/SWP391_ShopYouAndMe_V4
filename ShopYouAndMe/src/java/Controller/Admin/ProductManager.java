@@ -21,8 +21,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Objects;
@@ -190,50 +192,20 @@ public class ProductManager extends HttpServlet {
                     response.sendRedirect("productmanager");
                     return;
                     ///////////////////
+                    //////////////////
                 }else if (action.equalsIgnoreCase("insertproduct")) {
-                    String product_id = request.getParameter("product_id");
-                    String category_id = request.getParameter("category_id");
-                    String product_name = request.getParameter("product_name");
-                    String product_price = request.getParameter("price");
-                    String product_size = request.getParameter("size");
-                    String product_color = request.getParameter("color");
-                    String product_quantity = request.getParameter("quantity");
-                    String product_img = "images/" + request.getParameter("product_img");
-                    String product_describe = request.getParameter("describe");
-                    String active = request.getParameter("permission");
-                    int quantity = Integer.parseInt(product_quantity);
-                    Float price = Float.parseFloat(product_price);
-                    int cid = Integer.parseInt(category_id);
+                    Part filePart = request.getPart("file");
 
-                    productDAO dao = new productDAO();
-                    Category cate = new Category(cid);
-                    String[] size_rw = product_size.split("\\s*,\\s*");
-                    String[] color_rw = product_color.split("\\s*,\\s*");
+                    InputStream fileContent = filePart.getInputStream();
 
-                    List<Size> list = new ArrayList<>();
-                    for (String s : size_rw) {
-                        list.add(new Size(product_id, s));
+                    Workbook workbook = new XSSFWorkbook(fileContent);
+                    Sheet sheet = workbook.getSheetAt(0);
+                    int totalRow = sheet.getLastRowNum();
+                    for (Row row : sheet) {
+                        if (row.getRowNum() > 3) {
+                            handleExcelData(row);
+                        }
                     }
-
-                    List<Color> list2 = new ArrayList<>();
-                    for (String c : color_rw) {
-                        list2.add(new Color(product_id, c));
-                    }
-
-                    Product product = new Product();
-                    Product_Active Pa = new Product_Active(product_id, active);
-                    product.setCate(cate);
-                    product.setProduct_id(product_id);
-                    product.setProduct_name(product_name);
-                    product.setProduct_price(price);
-                    product.setProduct_describe(product_describe);
-                    product.setQuantity(quantity);
-                    product.setImg(product_img);
-                    product.setSize(list);
-                    product.setColor(list2);
-                    product.setActive(Pa);
-                    //insert product by page
-                    dao.insertProduct(product);
                     response.sendRedirect("productmanager");
                     return;
                 }
