@@ -103,6 +103,14 @@
                                 </div>
                                 <!-- UploadExcelBtn -->
                                 <!-- uploadModal -->
+                                
+                                <!-- 
+                                
+                                
+                                
+                                
+                                -->
+                                
                                 <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
@@ -125,6 +133,12 @@
                                         </div>
                                     </div>
                                 </div>
+                                 <!-- 
+                                
+                                
+                                
+                                
+                                -->
                                 <!-- uploadModal -->
                                 <div class="col-sm-2">
                                     <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTable()"><i
