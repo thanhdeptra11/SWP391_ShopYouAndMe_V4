@@ -21,6 +21,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Objects;
 import model.Product_Active;
@@ -186,6 +189,52 @@ public class ProductManager extends HttpServlet {
                     dao.updateProduct(product, cid, list2, list);
                     response.sendRedirect("productmanager");
                     return;
+                }else if (action.equalsIgnoreCase("insertproduct")) {
+                    String product_id = request.getParameter("product_id");
+                    String category_id = request.getParameter("category_id");
+                    String product_name = request.getParameter("product_name");
+                    String product_price = request.getParameter("price");
+                    String product_size = request.getParameter("size");
+                    String product_color = request.getParameter("color");
+                    String product_quantity = request.getParameter("quantity");
+                    String product_img = "images/" + request.getParameter("product_img");
+                    String product_describe = request.getParameter("describe");
+                    String active = request.getParameter("permission");
+                    int quantity = Integer.parseInt(product_quantity);
+                    Float price = Float.parseFloat(product_price);
+                    int cid = Integer.parseInt(category_id);
+
+                    productDAO dao = new productDAO();
+                    Category cate = new Category(cid);
+                    String[] size_rw = product_size.split("\\s*,\\s*");
+                    String[] color_rw = product_color.split("\\s*,\\s*");
+
+                    List<Size> list = new ArrayList<>();
+                    for (String s : size_rw) {
+                        list.add(new Size(product_id, s));
+                    }
+
+                    List<Color> list2 = new ArrayList<>();
+                    for (String c : color_rw) {
+                        list2.add(new Color(product_id, c));
+                    }
+
+                    Product product = new Product();
+                    Product_Active Pa = new Product_Active(product_id, active);
+                    product.setCate(cate);
+                    product.setProduct_id(product_id);
+                    product.setProduct_name(product_name);
+                    product.setProduct_price(price);
+                    product.setProduct_describe(product_describe);
+                    product.setQuantity(quantity);
+                    product.setImg(product_img);
+                    product.setSize(list);
+                    product.setColor(list2);
+                    product.setActive(Pa);
+                    //insert product by page
+                    dao.insertProduct(product);
+                    response.sendRedirect("productmanager");
+                    return;
                 }
             } else {
                 response.sendRedirect("user?action=login");
@@ -211,10 +260,34 @@ public class ProductManager extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    public int BUFFER_SIZE = 1024 * 1000;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String action = request.getParameter("action");
+        if ("dowloadTemplate".equals(action)) {
+            String path = getServletContext().getRealPath("") + "excel_template" + File.separator + "sample-xlsx-file.xlsx";
+
+            System.out.println(path);
+
+            File file = new File(path);
+            OutputStream os = null;
+            FileInputStream fis = null;
+
+            response.setHeader("Content-Disposition", String.format("attachment;filename=\"%s\"", file.getName()));
+            response.setContentType("application/octet-stream");
+            if (file.exists()) {
+                os = response.getOutputStream();
+                fis = new FileInputStream(file);
+                byte[] bf = new byte[BUFFER_SIZE];
+                int byteRead = -1;
+                while ((byteRead = fis.read(bf)) != -1) {
+                    os.write(bf, 0, byteRead);
+                }
+            }
+        } else {
+            processRequest(request, response);
+        }
     }
 
     /**
