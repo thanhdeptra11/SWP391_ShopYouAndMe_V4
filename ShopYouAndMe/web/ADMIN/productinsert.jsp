@@ -173,6 +173,12 @@
                             class="app-menu__label">Quản lý đơn hàng</span></a></li>
                 <li><a class="app-menu__item" href="reportmanager"><i class='app-menu__icon bx bx-receipt'></i><span
                             class="app-menu__label">Quản lý phản hồi</span></a></li>
+                <li><a class="app-menu__item" href="aboutmanager"><i class='app-menu__icon bx bx-receipt'></i><span
+                            class="app-menu__label">Quản lý trang giới thiệu</span></a></li>
+                <li><a class="app-menu__item" href="ratingmanager"><i class='app-menu__icon bx bx-receipt'></i><span
+                            class="app-menu__label">Quản lý đánh giá</span></a></li>
+                <li><a class="app-menu__item" href="commentmanager"><i class='app-menu__icon bx bx-receipt'></i><span
+                            class="app-menu__label">Quản lý bình luận</span></a></li>
             </ul>
         </aside>
         <main class="app-content">
@@ -237,13 +243,6 @@
                                 <div class="form-group  col-md-3">
                                     <label class="control-label">Số lượng</label>
                                     <input class="form-control" name="quantity" type="number" min="1" oninput="validateQuantity(this)">
-                                </div>
-                                <div class="form-group  col-md-3">
-                                    <label class="control-label">Quản lý trạng thái hoạt động</label>
-                                    <select name="permission" class="form-control" id="exampleSelect1">
-                                        <option value="True">Bật</option>
-                                        <option value="False">Tắt</option>
-                                    </select>
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="control-label">Ảnh sản phẩm</label>

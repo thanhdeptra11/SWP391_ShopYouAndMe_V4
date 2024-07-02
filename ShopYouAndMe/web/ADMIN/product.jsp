@@ -4,7 +4,6 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="model.Product" %>
 <%@page import="model.Product_Active" %>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -26,7 +25,9 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
         <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
-
+        <style>
+            
+        </style>
 
     </head>
 
@@ -70,6 +71,12 @@
                             class="app-menu__label">Quản lý đơn hàng</span></a></li>
                 <li><a class="app-menu__item" href="reportmanager"><i class='app-menu__icon bx bx-receipt'></i><span
                             class="app-menu__label">Quản lý phản hồi</span></a></li>
+                <li><a class="app-menu__item" href="aboutmanager"><i class='app-menu__icon bx bx-receipt'></i><span
+                            class="app-menu__label">Quản lý trang giới thiệu</span></a></li>
+                <li><a class="app-menu__item" href="ratingmanager"><i class='app-menu__icon bx bx-receipt'></i><span
+                            class="app-menu__label">Quản lý đánh giá</span></a></li>
+                <li><a class="app-menu__item" href="commentmanager"><i class='app-menu__icon bx bx-receipt'></i><span
+                            class="app-menu__label">Quản lý bình luận</span></a></li>
             </ul>
         </aside>
         <main class="app-content">
@@ -88,6 +95,51 @@
                                     <a class="btn btn-add btn-sm" href="productmanager?action=insert" title="Thêm"><i class="fas fa-plus"></i>
                                         Tạo mới sản phẩm</a>
                                 </div>
+                                <!-- UploadExcelBtn -->
+                                <div class="col-sm-2">
+                                    <a class="btn btn-add btn-sm"  title="ThêmExcel"
+                                       data-toggle="modal" data-target="#uploadModal"><i class="fas fa-plus"></i>
+                                        Tạo mới sản phẩm bằng Excel(chỉ xlsx)</a>
+                                </div>
+                                <!-- UploadExcelBtn -->
+                                <!-- uploadModal -->
+                                
+                                <!-- 
+                                
+                                
+                                
+                                
+                                -->
+                                
+                                <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" style="color: green" id="uploadModalLabel">Upload Excel File</h5>
+                                                <button type="button" class="btn btn-cancel btn-cancel" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="productmanager?action=insertByExcel" method="POST" enctype="multipart/form-data">
+                                                    <div class="form-group">
+                                                        <label for="fileInput">Choose file</label>
+                                                        <input type="file"  class="form-control-file" id="fileInput" name="file" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Upload</button>
+                                                    <a style="margin: 10px" href="productmanager?action=dowloadTemplate" class="btn btn-primary">Download Template File</a>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                 <!-- 
+                                
+                                
+                                
+                                
+                                -->
+                                <!-- uploadModal -->
                                 <div class="col-sm-2">
                                     <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTable()"><i
                                             class="fas fa-print"></i> In dữ liệu</a>
@@ -107,7 +159,7 @@
                                             <th>Thông tin</th>
                                             <th>Số lượng</th>
                                             <th>Ảnh</th>
-                                            <th>Trạng thái hoạt động</th>
+                                            <th>Trạng thái</th>
                                             <th>Chức năng</th>
                                         </tr>
                                     </thead>
@@ -209,9 +261,10 @@
                                                                     <script>
                                                                         CKEDITOR.replace('product_describe');
                                                                     </script>
+
                                                                 </div>
                                                                 <div class="form-group col-md-6">
-                                                                    <label class="control-label">Quản lý trạng thái hoạt động</label>
+                                                                    <label class="control-label">Trạng thái</label>
                                                                     <select name="permission" class="form-control" id="exampleSelect1">
                                                                         <option value="True">Bật</option>
                                                                         <option value="False">Tắt</option>
