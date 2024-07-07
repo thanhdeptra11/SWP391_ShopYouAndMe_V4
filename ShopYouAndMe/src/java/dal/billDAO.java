@@ -240,4 +240,21 @@ public class billDAO extends DBContext {
         }
         return totalUnpaid;
     }
+    public int GetLastId() {
+        String query = "SELECT MAX(bill_id) AS LastID FROM bill";
+        int lastId = 0;
+
+        try {
+            conn = new DBContext().getConnection();
+            ps = conn.prepareStatement(query);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                lastId = rs.getInt("LastID");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            return lastId;
+    }
 }
