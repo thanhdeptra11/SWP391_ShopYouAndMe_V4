@@ -1,6 +1,6 @@
 <%@page import="java.net.URLEncoder"%>
 <%@page import="java.nio.charset.StandardCharsets"%>
-<%@page import="Vnpay.Config"%>
+<%@page import="VnPayCommon.Config"%>
 <%@ page import="java.text.SimpleDateFormat, java.util.Date, java.text.ParseException" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
@@ -11,7 +11,8 @@
 <%@page import="java.util.Enumeration"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.HashMap"%>
-
+<%@ page import="model.*" %>
+<%@ page import="dal.*" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -32,6 +33,32 @@
             label{
                 font-size: 20px;
             }
+            .transaction-status {
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+    .transaction-details {
+      margin-bottom: 20px;
+    }
+    .transaction-details dt {
+      font-weight: bold;
+    }
+        .blue-orange-header {
+    background: linear-gradient(to right, rgba(0, 0, 255, 0.7), rgba(255, 165, 0, 0.7)); /* Lighter blue and orange with 0.7 opacity */
+    color: white;
+    padding: 20px;}
+    .rounded-header {
+      background: linear-gradient(to right, blue, orange);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+    }
+     body {
+                background: linear-gradient(135deg, #e6f2ff 0%, #fff5e6 100%);
+                font-family: 'Arial', sans-serif;
+                min-height: 100vh;
+            }
         </style>
     </head>
     <body>
@@ -45,7 +72,6 @@
                     fields.put(fieldName, fieldValue);
                 }
             }
-
             String vnp_SecureHash = request.getParameter("vnp_SecureHash");
             if (fields.containsKey("vnp_SecureHashType")) {
                 fields.remove("vnp_SecureHashType");
@@ -54,17 +80,17 @@
                 fields.remove("vnp_SecureHash");
             }
             String signValue = Config.hashAllFields(fields);
-
         %>
         <!--Begin display -->
-        <div class="container">
-            <div class="header clearfix">
-                <h3 class="text-muted">KẾT QUẢ THANH TOÁN</h3>
-            </div>
+        <div class="container mt-5">
+            <div class="row">
+        <header class="blue-orange-header col-md-12 rounded-header">
+            <h1 class="text-center">Kết quả thanh toán</h1>
+          </header>
             <div class="table-responsive">
                 <div class="form-group">
                     <label style="font-size: 20px" >Mã giao dịch thanh toán:</label>
-                    <label><%=request.getParameter("vnp_TxnRef")%></label>
+                    <label><%=request.getParameter("vnp_TxnRef").split("R")[0]%></label>
                 </div>    
                 <div class="form-group">
                     <label >Số tiền:</label>
@@ -96,7 +122,7 @@
                         Date date = originalFormat.parse(originalTimestamp);
                     formattedTimestamp = newFormat.format(date);
                     out.print(formattedTimestamp);
-                    %></label>
+                        %></label>
                 </div> 
                 <div class="form-group">
                     <label >Tình trạng giao dịch:</label>
@@ -104,17 +130,43 @@
                         <%
                             if (signValue.equals(vnp_SecureHash)) {
                                 if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
-                                    out.print("Thành công");
+                                    out.println("Payment success!");
+                                    try {
+                                        BillRubish bill = (BillRubish) request.getSession().getAttribute("pendingBill");
+                                        billDAO dao = new billDAO();
+                                        if (bill != null) {
+                                            dao.addOrder(bill.getUser(), bill.getCart(), bill.getPayment(), bill.getAddress(), Integer.parseInt(bill.getPhone()));
+                                            request.getSession().removeAttribute("cart");
+                                            request.getSession().removeAttribute("pendingBill");
+                                            request.getSession().setAttribute("size", 0);
+                                            // Log successful transaction
+                                            System.out.println("Transaction successful for order: " + request.getParameter("vnp_TxnRef").split("R")[0]);
+                                        } else {
+                                            
+                                            // Log error
+                                           
+                                        }
+                                    } catch (Exception e) {
+                                        out.print("Error processing order");
+                                        // Log error
+                                        System.out.println("Error processing order: " + e.getMessage());
+                                    }
                                 } else {
                                     out.print("Không thành công");
+                                    // Log failed transaction
+                                    System.out.println("Transaction failed: " + request.getParameter("vnp_TransactionStatus"));
                                 }
-
                             } else {
                                 out.print("invalid signature");
+                                // Log security issue
+                                System.out.println("Invalid signature for transaction: " + request.getParameter("vnp_TxnRef"));
                             }
-                        %></label>
+                        %>
+                    </label>
+                    
                 </div> 
             </div>
+            <a  href="http://localhost:9999/shop/index.jsp">Cảm ơn quý khách đã mua hàng</a>
             <p>
                 &nbsp;
             </p>
@@ -122,6 +174,6 @@
                 <p>&copy; VNPAY 2020</p>
             </footer>
         </div> 
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     </body>
 </html>
