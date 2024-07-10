@@ -124,7 +124,7 @@
                                                 <form action="productmanager?action=insertByExcel" method="POST" enctype="multipart/form-data">
                                                     <div class="form-group">
                                                         <label for="fileInput">Choose file</label>
-                                                        <input type="file"  class="form-control-file" id="fileInput" name="file" required>
+                                                        <input type="file" accept=".xlsx"  class="form-control-file" id="fileInput" name="file" required>
                                                     </div>
                                                     <button type="submit" class="btn btn-primary">Upload</button>
                                                     <a style="margin: 10px" href="productmanager?action=dowloadTemplate" class="btn btn-primary">Download Template File</a>

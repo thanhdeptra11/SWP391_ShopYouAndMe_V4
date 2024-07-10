@@ -59,6 +59,11 @@ public class Home extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
+//        request.setAttribute("page", page);
+//            request.setAttribute("num", num);
+//            request.setAttribute("CategoryData", category);
+//            request.setAttribute("ProductData", product);
+//            request.getRequestDispatcher("shop_category.jsp").forward(request, response);
     }
 
     /**
