@@ -24,6 +24,7 @@ public class productDAO extends DBContext {
     PreparedStatement ps = null;
     ResultSet rs = null;
 
+    //get all product
     public List<Product> getProduct() {
         List<Product> list = new ArrayList<>();
         String sql = "select c.category_name ,  p.product_id , p.product_name, p.product_price, p.product_describe, p.quantity,p.img, p.category_id from  \n"
